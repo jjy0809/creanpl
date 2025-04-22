@@ -27,3 +27,5 @@ if __name__ == "__main__":
         ans = input("문장 입력 -> ")
         if ans == "00": exit()
         print(cen_req(ans, lst))
+        
+        #https://n.news.naver.com/article/comment/021/0002690010
