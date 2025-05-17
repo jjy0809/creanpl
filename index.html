@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>cranpl AI 테스트</title>
+    <style>
+        body {
+            background-color: #eee;
+        }
+        .container { 
+            width: 80%; 
+            margin: 20px auto;
+            padding: 20px; 
+        }
+        textarea { 
+            width: 100%; 
+            height: 70px;
+            min-height: 35px;
+            font-size: x-large;
+            margin: 0; 
+            padding: 10px; 
+            resize: vertical;
+            border-radius: 10px;
+            border-width: 2px;
+            border-color: #828282;
+            transition: all 0.3s;
+        }
+        textarea:hover {
+            border-color: #57b3ff;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        button { 
+            padding: 9px 18px; 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 10px;
+            font-size: 15px;
+            cursor: pointer; 
+            transition: all 0.3s;
+        }
+        button:hover { 
+            filter: brightness(0.9);
+        }
+        #result { 
+            margin-top: 20px; 
+            font-size: 30px; 
+            color: #333; 
+        }
+        p {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 15px;
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>creanpl AI 테스트</h2>
+        <textarea id="inputText" placeholder="검사할 텍스트를 입력하세요"></textarea>
+        <p>점수가 높을수록 부적절한 텍스트일 확률이 높습니다<br>욕설을 포함하여 청소년에게 다소 부적절하다고 판단되는 문장인지 검사합니다</p>
+        <button onclick="sendRequest()">검사</button>
+        <div id="result"></div>
+        
+    </div>
+
+    <script>
+        async function sendRequest() {
+            const text = document.getElementById('inputText').value;
+            const apiUrl = 'https://nlu35qe7zd.execute-api.ap-northeast-2.amazonaws.com/creanpl/creanpl';
+            
+            try {
+                if (!text) {
+                    document.getElementById('result').innerHTML = "텍스트를 입력하세요";
+                    return;
+                }
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ com: text, lst: [1,1,1,1,0,1,1] })
+                });
+
+                const rawText = await response.text();
+                console.log("응답 데이터:", rawText); 
+                
+                const firstParse = JSON.parse(rawText);
+                const finalData = firstParse.body ? JSON.parse(firstParse.body) : firstParse;
+                
+                document.getElementById('result').innerHTML = 
+                    finalData.score !== undefined 
+                    ? `점수: ${finalData.score}` 
+                    : `오류: ${finalData.error_message || '오류 발생'}`;
+
+                    score_text = document.getElementById('result');
+                    if (finalData.score >= 10) {
+                        score_text.style.color = "#fe4b4b";
+                    } else {
+                        score_text.style.color = "#007bff";
+                    }
+
+                    
+            } catch (error) {
+                document.getElementById('result').innerHTML = 
+                    `오류 발생: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
